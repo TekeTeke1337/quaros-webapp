@@ -2,51 +2,53 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>QUAROS Профиль с видео</title>
+  <meta charset="UTF-8" />
+  <title>QUAROS Профиль</title>
   <style>
     body {
       margin: 0;
-      background: #000;
+      background-color: #000;
       font-family: 'Orbitron', sans-serif;
       color: #00f0ff;
+      overflow: hidden;
     }
-    .profile-card-wrapper {
-      position: relative;
-      display: block;
-      width: 100%;
+    .background {
+      position: fixed;
+      width: 100vw;
       height: 100vh;
+      background: url('card.png') center/contain no-repeat;
+      z-index: 0;
     }
-    .profile-video-bg {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .overlay {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
     }
-    .profile-overlay {
+    .field {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       text-align: center;
-      color: #fff;
+      color: #00f0ff;
+      text-shadow: 0 0 6px #00f0ff99;
     }
-    .profile-overlay h2 {
-      font-size: 36px;
-      margin-bottom: 12px;
-    }
-    .profile-overlay p {
-      font-size: 18px;
-    }
+    .role     { top: 6%;   left: 50%; transform: translateX(-50%); font-size: 18px; }
+    .name     { top: 41%;  left: 50%; transform: translateX(-50%); font-size: 24px; font-weight: bold; }
+    .username { top: 47%;  left: 50%; transform: translateX(-50%); font-size: 16px; color: #55eaff; }
+    .age      { bottom: 23%; left: 18%; transform: translateX(-50%); font-size: 18px; }
+    .rank     { bottom: 23%; right: 18%; transform: translateX(50%); font-size: 18px; }
+    .balance  { bottom: 14%; left: 50%; transform: translateX(-50%); font-size: 16px; color: #999; }
   </style>
 </head>
 <body>
-  <div class="profile-card-wrapper">
-    <video autoplay muted loop playsinline class="profile-video-bg">
-      <source src="/static/card.webm" type="video/webm">
-    </video>
-    <div class="profile-overlay" id="profileOverlay">
-      <h2>Загрузка...</h2>
-    </div>
+  <div class="background"></div>
+  <div class="overlay">
+    <div class="field role" id="role">Титул</div>
+    <div class="field name" id="name">Имя</div>
+    <div class="field username" id="username">@username</div>
+    <div class="field age" id="age">Возраст</div>
+    <div class="field rank" id="rank">Ранг</div>
+    <div class="field balance" id="balance">—</div>
   </div>
 
   <script>
@@ -64,14 +66,15 @@
         const res = await fetch(`https://quaros-backend.onrender.com/user/${userId}`);
         if (!res.ok) throw new Error('Пользователь не найден');
         const user = await res.json();
-        const profileOverlay = document.getElementById('profileOverlay');
-        profileOverlay.innerHTML = `
-          <h2>${user.name}</h2>
-          <p>Ранг: ${user.rank}</p>
-          <p>Возраст: ${user.age} лет</p>
-        `;
+
+        document.getElementById('name').innerText     = user.name || "Имя";
+        document.getElementById('username').innerText = "@" + (user.username || username);
+        document.getElementById('age').innerText      = user.age + " лет";
+        document.getElementById('rank').innerText     = user.rank;
+        document.getElementById('role').innerText     = user.role;
+        document.getElementById('balance').innerText  = "—";  // пока заглушка
       } catch (e) {
-        console.warn("Ошибка загрузки профиля:", e);
+        console.warn("Ошибка загрузки:", e);
       }
     }
 
