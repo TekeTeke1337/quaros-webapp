@@ -1,5 +1,5 @@
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 import json
 import os
 
@@ -8,6 +8,10 @@ app = Flask(__name__)
 users = {
     "946001310": {"name": "Александр", "rank": "E", "age": 24, "role": "Разработчик", "username": "testuser"}
 }
+
+@app.route('/')
+def index():
+    return send_file("index.html")
 
 @app.route('/user/<string:user_id>', methods=['GET'])
 def get_user(user_id):
