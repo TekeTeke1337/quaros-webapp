@@ -1,10 +1,10 @@
 
 from flask import Flask, jsonify, request
 import json
+import os
 
 app = Flask(__name__)
 
-# Пример пользователей (вместо базы данных)
 users = {
     "946001310": {"name": "Александр", "rank": "E", "age": 24, "role": "Разработчик", "username": "testuser"}
 }
@@ -40,4 +40,5 @@ def get_tournaments():
     return jsonify(tournaments)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
