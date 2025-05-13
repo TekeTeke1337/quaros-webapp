@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>QUAROS Профиль с видео</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      font-family: 'Orbitron', sans-serif;
+      color: #00f0ff;
+    }
+    .profile-card-wrapper {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100vh;
+    }
+    .profile-video-bg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .profile-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #fff;
+    }
+    .profile-overlay h2 {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+    .profile-overlay p {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-card-wrapper">
+    <video autoplay muted loop playsinline class="profile-video-bg">
+      <source src="/static/card.webm" type="video/webm">
+    </video>
+    <div class="profile-overlay" id="profileOverlay">
+      <h2>Загрузка...</h2>
+    </div>
+  </div>
+
+  <script>
+    let tg = window.Telegram?.WebApp || {
+      initDataUnsafe: { user: { id: "946001310", username: "testuser" } },
+      expand: () => {}
+    };
+    tg.expand();
+
+    const userId = tg.initDataUnsafe.user?.id || "946001310";
+    const username = tg.initDataUnsafe.user?.username || "testuser";
+
+    async function loadUser() {
+      try {
+        const res = await fetch(`https://quaros-backend.onrender.com/user/${userId}`);
+        if (!res.ok) throw new Error('Пользователь не найден');
+        const user = await res.json();
+        const profileOverlay = document.getElementById('profileOverlay');
+        profileOverlay.innerHTML = `
+          <h2>${user.name}</h2>
+          <p>Ранг: ${user.rank}</p>
+          <p>Возраст: ${user.age} лет</p>
+        `;
+      } catch (e) {
+        console.warn("Ошибка загрузки профиля:", e);
+      }
+    }
+
+    loadUser();
+  </script>
+</body>
+</html>
